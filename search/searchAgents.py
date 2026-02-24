@@ -554,3 +554,21 @@ def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pa
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
     return len(search.bfs(prob))
+
+
+
+from search import exploracion
+
+class AgenteExplorador(Agent):
+    """
+    @brief Agente que explora el laberinto usando exploracion().
+    """
+    def __init__(self):
+        """
+        @brief Inicializa el agente y asigna la función de accion obtenida de exploracion()
+        """
+        super().__init__()
+        self.getAction = exploracion()
+
+
+

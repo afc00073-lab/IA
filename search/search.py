@@ -117,7 +117,181 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
 
 def exploration(problem):
      # Stack for DFS traversal
-    util.raiseNotDefined()
+    from util import Stack
+    stack = Stack()
+
+    # Get the starting state
+    start_state = problem.getStartState()
+    stack.push((start_state, []))  # (current state, path taken)
+
+    # Set to track visited states
+    visited = set()
+
+    # List to store the final path
+    exploration_path = []
+
+    while not stack.isEmpty():
+        # Pop the top state from the stack
+        state, path = stack.pop()
+
+        # If this state has not been visited
+        if state not in visited:
+            visited.add(state)
+            exploration_path.extend(path)  # Add path to exploration
+
+            # Get all valid successors (next states that are not walls)
+            for successor, action, step_cost in problem.getSuccessors(state):
+                if successor not in visited:
+                    new_path = path + [action]
+                    stack.push((successor, new_path))
+
+    return exploration_path  # Return a full exploration path
+
+import datetime
+import csv
+import atexit
+import sys
+
+def obtener_laberinto_terminal():
+    """
+    @brief Obtiene el nombre del laberinto desde los argumentos de la terminal.
+    @return str Nombre del laberinto o "Desconocido" si no se encuentra.
+    """
+    palabras = sys.argv
+    for i, palabra in enumerate(palabras):
+        # añadimos 'or palabra == "-l"' para que detecte la abreviatura
+        if palabra == "--layout" or palabra == "-l":
+            if i + 1 < len(palabras):
+                return palabras[i + 1]
+        elif palabra.startswith("--layout="):
+            return palabra.split("=", 1)[1]
+
+    return "Desconocido"
+
+
+def exploracion():
+    """
+    @brief Funcion de exploración del laberinto
+    @return function getAction devuelve la funcion que determina la accion de Pacman en cada estado
+    """
+    pasos = 0
+    atexit.register(lambda: guardar_registro(pasos, visitadas, tiempo_inicio, laberinto))
+    laberinto = obtener_laberinto_terminal()
+    tiempo_inicio = datetime.datetime.now()
+
+
+    historial = []
+    visitadas = set()
+
+    def getAction(estado):
+        """
+        @brief Determina la accion a realizar en cada estado del juego
+        @param estado es el estado actual del juego
+        @return str devuelve la accion seleccionada
+        """
+        nonlocal pasos
+        pasos += 1
+        #gaurdamos la posicion actual
+        posicion_actual = estado.getPacmanPosition()
+        #la insertamos en visiatadas, evidentemente, ya que estamos en ella
+        visitadas.add(posicion_actual)
+        #pedimos que acciones puede hacer el pacman en esa posicion: p.e acciones_legales=['North', 'East', 'Stop']
+        acciones_legales = estado.getLegalPacmanActions()
+        #aqui intentamos a acceder a la primera accion legal posible ->
+        accion_elegida = seleccionarAccion(posicion_actual, acciones_legales)
+        #si encontramo suna nueva, pues genial, guardamos la que tenmos y devolvemos la nueva, si no pues devolvemos la contraria
+        if accion_elegida:
+            historial.append(accion_elegida)
+            return accion_elegida
+
+        return casillaContraria(acciones_legales)
+
+    def seleccionarAccion(posicion_actual, acciones_legales):
+        """
+        @brief Selecciona la mejor accion disponible para explorar nuevas areas
+        @param posicion_actual posicion actual del Pacman
+        @param acciones_legales lista de acciones legales disponibles
+        @return str devuelve la accion seleccionada o una lista vacaa si no hay sitios inexplorados
+        """
+        #si tenemos por ejemplo ['North', 'East', 'Stop'] no se mira oeste, basicamente esta funcion hace que vayamos en orden
+        acciones_en_orden = [Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST]
+        for accion in acciones_en_orden:
+            if accion in acciones_legales:
+                siguiente_posicion = movimientos(posicion_actual, accion)
+                if siguiente_posicion not in visitadas:
+                    return accion
+        return []
+
+    """
+            @brief Retrocede cuando no hay movimientos inexplorados disponibles
+            @param acciones_legales es una lista de acciones legales en la posicion actual
+            @return str devuelve la accion contraria o STOP si no hay opciones
+     """
+    def casillaContraria(acciones_legales):
+
+        if historial:
+            ultima_accion = historial.pop()
+            accion_contraria = movimientos(None, ultima_accion, contraria=True)
+            if accion_contraria in acciones_legales:
+                return accion_contraria
+        return Directions.STOP
+
+    def movimientos(posicion, accion, contraria=False):
+        """
+        @brief Calcula la nueva posicion o devuelve la accion opuesta si es necesario
+        @param posicion es la posicion actual
+        @param accion es la accion elegida
+        @param contraria es un bool que indica si se debe obtener la accion opuesta
+        @return tuple devuelve una nueva posicion (x, y) o una accion contraria si se especifica
+        """
+        listaMovimientos = {
+            Directions.NORTH: (0, 1),
+            Directions.EAST: (1, 0),
+            Directions.SOUTH: (0, -1),
+            Directions.WEST: (-1, 0),
+        }
+
+        opuestas = {
+            Directions.NORTH: Directions.SOUTH,
+            Directions.SOUTH: Directions.NORTH,
+            Directions.EAST: Directions.WEST,
+            Directions.WEST: Directions.EAST,
+        }
+        if contraria:
+            return opuestas.get(accion, Directions.STOP)
+        dx, dy = listaMovimientos.get(accion, (0, 0))
+        return posicion[0] + dx, posicion[1] + dy
+
+    def guardar_registro(pasos, visitadas, tiempo_inicio, laberinto):
+        """
+        @brief Guarda los datos de la exploracion en un archivo CSV
+        @param pasos es el total de pasos dados
+        @param visitadas es el conjunto de casillas exploradas
+        @param tiempo_inicio es el iempo al empezar la exploracion
+        @param laberinto es el nombre del laberinto elegido
+        """
+        tiempo_fin = datetime.datetime.now()
+        tiempo_transcurrido = (tiempo_fin - tiempo_inicio).total_seconds()
+        casillas_exploradas = len(visitadas)
+        ratio_repeticion = pasos / casillas_exploradas if casillas_exploradas > 0 else 0
+
+        archivo = "r.csv"
+        encabezados = ["Laberinto", "Total de pasos", "Numero de casillas exploradas", "Ratio de repetición", "Coste acumulado"]
+
+        try:
+            with open(archivo, "r", encoding="utf-8") as file:
+                tiene_datos = bool(file.readline())
+        except FileNotFoundError:
+            tiene_datos = False
+
+        with open(archivo, "a", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            if not tiene_datos:
+                writer.writerow(encabezados)
+            writer.writerow([laberinto, pasos, casillas_exploradas, ratio_repeticion, tiempo_transcurrido])
+
+    return getAction
+
 
 # Abbreviations
 bfs = breadthFirstSearch
@@ -125,3 +299,6 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 exp = exploration
+
+
+
