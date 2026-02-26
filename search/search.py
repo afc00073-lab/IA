@@ -291,11 +291,7 @@ def exploracion():
             writer.writerow([laberinto, pasos, casillas_exploradas, ratio_repeticion, tiempo_transcurrido])
 
     return getAction
-
-
-
-
-
+#prueba
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
