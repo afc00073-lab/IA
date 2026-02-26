@@ -1,0 +1,24 @@
+Laberinto,Total de pasos,Numero de casillas exploradas,Ratio de repetición,Coste acumulado
+Desconocido,0,0,0,0.199994
+Desconocido,0,0,0,0.001999
+Desconocido,0,0,0,0.00174
+Desconocido,0,0,0,0.00187
+Desconocido,39,39,1.0,6.952566
+Desconocido,39,39,1.0,6.920335
+mediumMaze,39,39,1.0,6.924976
+smallMaze,76,46,1.6521739130434783,11.419847
+trickySearch,38,37,1.027027027027027,5.930918
+openSearch,16,16,1.0,3.174599
+openSearch,48,48,1.0,7.16958
+openSearch,48,48,1.0,7.173711
+openSearch,12,12,1.0,2.660325
+openSearch,38,38,1.0,5.899854
+openSearch,16,16,1.0,3.387373
+openSearch,96,88,1.0909090909090908,13.09663
+trickySearch,38,37,1.027027027027027,6.354555
+trickySearch,0,0,0,0.004031
+trickySearch,38,37,1.027027027027027,5.94633
+trickySearch,38,37,1.027027027027027,5.972798
+trickySearch,38,37,1.027027027027027,5.924765
+mediumMaze,34,34,1.0,5.189214
+mediumMaze,66,65,1.0153846153846153,10.122305

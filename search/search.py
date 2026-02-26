@@ -214,7 +214,7 @@ def exploracion():
         @return str devuelve la accion seleccionada o una lista vacaa si no hay sitios inexplorados
         """
         #si tenemos por ejemplo ['North', 'East', 'Stop'] no se mira oeste, basicamente esta funcion hace que vayamos en orden
-        acciones_en_orden = [Directions.NORTH, Directions.EAST, Directions.SOUTH, Directions.WEST]
+        acciones_en_orden = [Directions.WEST,Directions.NORTH, Directions.EAST, Directions.SOUTH]
         for accion in acciones_en_orden:
             if accion in acciones_legales:
                 siguiente_posicion = movimientos(posicion_actual, accion)
@@ -299,6 +299,6 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 exp = exploration
-
+#python pacman.py -l trickySearch -p AgenteExplorador
 
 
