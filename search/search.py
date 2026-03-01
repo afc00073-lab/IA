@@ -95,7 +95,25 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontera=util.Queue()
+    visitadas=set()
+    estado_inicial=problem.getStartState()
+    frontera.push((estado_inicial,[]))
+    while not frontera.isEmpty():
+        estado_actual,ruta_actual=frontera.pop()
+        if problem.isGoalState(estado_actual):
+            return ruta_actual
+        if estado_actual not in visitadas:
+            visitadas.add(estado_actual)
+            sucesores=problem.getSuccessors(estado_actual)
+            for siguiente_estado,accion,costo in sucesores:
+                if siguiente_estado not in visitadas:
+                    nueva_ruta=ruta_actual+[accion]
+                    frontera.push((siguiente_estado,nueva_ruta))
+    return []
+
+
+
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
@@ -115,37 +133,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     util.raiseNotDefined()
 
 
-def exploration(problem):
-     # Stack for DFS traversal
-    from util import Stack
-    stack = Stack()
-
-    # Get the starting state
-    start_state = problem.getStartState()
-    stack.push((start_state, []))  # (current state, path taken)
-
-    # Set to track visited states
-    visited = set()
-
-    # List to store the final path
-    exploration_path = []
-
-    while not stack.isEmpty():
-        # Pop the top state from the stack
-        state, path = stack.pop()
-
-        # If this state has not been visited
-        if state not in visited:
-            visited.add(state)
-            exploration_path.extend(path)  # Add path to exploration
-
-            # Get all valid successors (next states that are not walls)
-            for successor, action, step_cost in problem.getSuccessors(state):
-                if successor not in visited:
-                    new_path = path + [action]
-                    stack.push((successor, new_path))
-
-    return exploration_path  # Return a full exploration path
 
 import datetime
 import csv
@@ -178,8 +165,6 @@ def exploracion():
     atexit.register(lambda: guardar_registro(pasos, visitadas, tiempo_inicio, laberinto))
     laberinto = obtener_laberinto_terminal()
     tiempo_inicio = datetime.datetime.now()
-
-
     historial = []
     visitadas = set()
 
@@ -297,7 +282,7 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
-exp = exploration
+exp = exploracion
 #python pacman.py -l trickySearch -p AgenteExplorador
 
 

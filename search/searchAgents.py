@@ -572,3 +572,7 @@ class AgenteExplorador(Agent):
 
 
 
+class BFSAgent(SearchAgent):
+    def __init__(self):
+        self.searchFunction = search.breadthFirstSearch
+        self.searchType = lambda state: PositionSearchProblem(state)
