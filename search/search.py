@@ -90,7 +90,28 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontera = util.Stack()
+    frontera.push((problem.getStartState(), []))
+
+    visitados = set()
+
+    while not frontera.isEmpty():
+        estado_actual, ruta_actual = frontera.pop()
+
+        if problem.isGoalState(estado_actual):
+            return ruta_actual
+
+        if estado_actual not in visitados:
+            visitados.add(estado_actual)
+
+            sucesores = problem.getSuccessors(estado_actual)
+            for siguiente_estado, accion, coste in sucesores:
+                if siguiente_estado not in visitados:
+                    nueva_ruta = ruta_actual + [accion]
+                    frontera.push((siguiente_estado, nueva_ruta))
+
+    return []
+
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
@@ -111,9 +132,6 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     nueva_ruta=ruta_actual+[accion]
                     frontera.push((siguiente_estado,nueva_ruta))
     return []
-
-
-
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
