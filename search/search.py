@@ -133,6 +133,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     frontera.push((siguiente_estado,nueva_ruta))
     return []
 
+
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
