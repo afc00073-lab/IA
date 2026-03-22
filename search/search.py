@@ -148,10 +148,48 @@ def nullHeuristic(state, problem=None) -> float:
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Usamos la cola de prioridad que nos da util.py para que ordene sola los caminos
+    # según la nota que saquemos de la fórmula f(n) = g(n) + h(n)
+    cola = util.PriorityQueue()
 
+    # Pillamos dónde empezamos. Guardo una tupla con la casilla, los pasos que llevo (vacío al principio)
+    # y el coste total que de momento es 0.
+    inicio = problem.getStartState()
+    cola.push((inicio, [], 0), heuristic(inicio, problem))
 
+    # Mi libreta para apuntar por dónde he pasado y no dar vueltas a lo tonto
+    nodos_visitados = []
+
+    while not cola.isEmpty():
+        # Saco el camino que tenga mejor pinta (el que la cola haya puesto el primero)
+        posicion, movimientos, coste_acumulado = cola.pop()
+
+        # Si estamos en la meta, devolvemos todos los pasos que hemos dado
+        if problem.isGoalState(posicion):
+            return movimientos
+
+        # Si esta casilla es nueva, la apunto en mi libreta
+        if posicion not in nodos_visitados:
+            nodos_visitados.append(posicion)
+
+            # Toca mirar a los vecinos para ver a dónde puedo ir desde aquí
+            for vecino, direccion, coste_vecino in problem.getSuccessors(posicion):
+                if vecino not in nodos_visitados:
+                    # Guardo la ruta que llevaría si me muevo a este vecino y le sumo el coste del paso
+                    nuevo_camino = movimientos + [direccion]
+                    nuevo_coste = coste_acumulado + coste_vecino
+
+                    # Aquí viene la magia del A*: calculo la intuición (heurística)
+                    # y se la sumo a los pasos que ya he dado para sacar la nota final
+                    valor_heuristica = heuristic(vecino, problem)
+                    nota_final = nuevo_coste + valor_heuristica
+
+                    # Lo meto a la cola con su nota final. Ella solita se encarga de ponerlo
+                    # más arriba o más abajo para la siguiente vuelta del bucle
+                    cola.push((vecino, nuevo_camino, nuevo_coste), nota_final)
+
+    # Por si acaso no encuentra nada (que en estos laberintos sería raro), devuelvo lista vacía
+    return []
 
 import datetime
 import csv
@@ -225,6 +263,7 @@ def exploracion():
                 if siguiente_posicion not in visitadas:
                     return accion
         return []
+
 
     """
             @brief Retrocede cuando no hay movimientos inexplorados disponibles

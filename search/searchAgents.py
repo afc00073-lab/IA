@@ -576,3 +576,11 @@ class BFSAgent(SearchAgent):
     def __init__(self):
         self.searchFunction = search.breadthFirstSearch
         self.searchType = lambda state: PositionSearchProblem(state)
+
+class AgenteExplorador_bae(SearchAgent):
+    # Este es el agente de la Actividad 4 que pide el guion.
+    # Básicamente le decimos que use la búsqueda A* y le enchufamos la heurística de
+    # Manhattan que ya venía hecha para que estime las distancias sin contar las paredes.
+    def __init__(self):
+        self.searchFunction = lambda prob: search.aStarSearch(prob, manhattanHeuristic)
+        self.searchType = lambda state: PositionSearchProblem(state)
