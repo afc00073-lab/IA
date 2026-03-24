@@ -112,10 +112,9 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 
     return []
 
-
+"""
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+  
     frontera=util.Queue()
     visitadas=set()
     estado_inicial=problem.getStartState()
@@ -133,7 +132,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     frontera.push((siguiente_estado,nueva_ruta))
     return []
 
-
+"""
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
