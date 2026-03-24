@@ -120,7 +120,22 @@ class SearchAgent(Agent):
         totalCost = problem.getCostOfActions(self.actions)
         print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
         if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
-
+        try:
+            laberinto = "Desconocido"
+            for i, palabra in enumerate(sys.argv):
+                if palabra in ["--layout", "-l"] and i + 1 < len(sys.argv):
+                    laberinto = sys.argv[i + 1]
+                elif palabra.startswith("--layout="):
+                    laberinto = palabra.split("=", 1)[1]
+            pasos = len(self.actions)
+            casillas_exploradas = problem._expanded if '_expanded' in dir(problem) else 0
+            ratio_repeticion = pasos / casillas_exploradas if casillas_exploradas > 0 else 0
+            tiempo_transcurrido = time.time() - starttime
+            with open("r.csv", "a", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                writer.writerow([laberinto, pasos, casillas_exploradas, ratio_repeticion, tiempo_transcurrido])
+        except Exception as e:
+            print("Error al guardar en r.csv:", e)
     def getAction(self, state):
         """
         Returns the next action in the path chosen earlier (in
@@ -558,7 +573,8 @@ def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pa
 
 
 from search import exploracion
-
+import csv
+import sys
 class AgenteExplorador(Agent):
     """
     @brief Agente que explora el laberinto usando exploracion().
@@ -572,9 +588,9 @@ class AgenteExplorador(Agent):
 
 
 
-class BFSAgent(SearchAgent):
+class DFSAgent(SearchAgent):
     def __init__(self):
-        self.searchFunction = search.breadthFirstSearch
+        self.searchFunction = search.depthFirstSearch
         self.searchType = lambda state: PositionSearchProblem(state)
 
 class AgenteExplorador_bae(SearchAgent):
