@@ -335,7 +335,7 @@ def exploracion():
     return getAction
 #prueba
 # Abbreviations
-bfs = breadthFirstSearch
+#bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
