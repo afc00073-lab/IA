@@ -90,22 +90,28 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    #Utilizaremos una pila, primero miramos los mas recientes
     frontera = util.Stack()
+    #problem.getStartState devuelve unda dupla con las posiciones iniciales
+    #en frontera añadimos la casilla y el camino que llevamos
     frontera.push((problem.getStartState(), []))
 
     visitados = set()
 
     while not frontera.isEmpty():
+        #asi obetenemos el nodo el cual vamos a procesar
         estado_actual, ruta_actual = frontera.pop()
-
+        #si ya lo hemos encontrado, pues devolvemos el camino
         if problem.isGoalState(estado_actual):
             return ruta_actual
-
+        #si este nodo no esta en visitados pus lo añadimos y sus sucesores tambien
         if estado_actual not in visitados:
             visitados.add(estado_actual)
-
+            #problem.getSucccesors devuelve tuplas de (a donde debe ir, la direccion y el costes)
+            #es como si cogiera el movimiento (-1,0) que es izquierda y nos devuelve la coordenada sumada
             sucesores = problem.getSuccessors(estado_actual)
             for siguiente_estado, accion, coste in sucesores:
+                #los que ya hayamos visitados no lo añadimos
                 if siguiente_estado not in visitados:
                     nueva_ruta = ruta_actual + [accion]
                     frontera.push((siguiente_estado, nueva_ruta))
@@ -149,6 +155,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     """Search the node that has the lowest combined cost and heuristic first."""
     # Usamos la cola de prioridad que nos da util.py para que ordene sola los caminos
     # según la nota que saquemos de la fórmula f(n) = g(n) + h(n)
+    # A diferencia del UCS, este suma g(n)+h(n) en el otro seria igual pero sin h(n)
     cola = util.PriorityQueue()
 
     # Pillamos dónde empezamos. Guardo una tupla con la casilla, los pasos que llevo (vacío al principio)
